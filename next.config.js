@@ -2,7 +2,11 @@
 const nextConfig = {
   experimental: {
     appDir: true,
+    reactRoot: true,
+    runtime: "nodejs",
+    serverComponents: true,
+    concurrentFeatures: true,
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

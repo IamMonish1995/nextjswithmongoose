@@ -10,8 +10,10 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import { CardActionArea, Grid } from "@mui/material";
+import SingleImage from "@/components/gallery/singleimage";
 
 export default function Gallery() {
+  const [image, setImage] = useState(null);
   const [images, setImages] = useState(null);
 
   function convertToBase64(file) {
@@ -103,10 +105,19 @@ export default function Gallery() {
     getData();
   }, []);
 
-  
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <>
+      <SingleImage
+        image={image}
+        open={open}
+        handleClose={handleClose}
+      ></SingleImage>
       <IconButton color="primary" aria-label="upload picture" component="label">
         <input
           hidden
@@ -133,18 +144,22 @@ export default function Gallery() {
                 key={item._id}
               >
                 <Card sx={{ maxWidth: 345 }}>
-                  
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    image={item.image}
-                    alt={item.name}
-                  />
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.name}
-                    </Typography>
-                  </CardContent>
+                  <CardActionArea
+                    onClick={() => {
+                      setImage(item);
+                      setOpen(true);
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={item.image}
+                      alt={item.name}
+                    />
+                    <CardContent>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.name}
+                      </Typography>
+                    </CardContent>
                   </CardActionArea>
 
                   <CardActions disableSpacing>
