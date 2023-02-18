@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -11,8 +12,13 @@ import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import { CardActionArea, Grid } from "@mui/material";
 import SingleImage from "@/components/gallery/singleimage";
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { AppContext } from "./_app";
 
 export default function Gallery() {
+  const router = useRouter();
+  const { isLoggedIn } = useContext(AppContext);
   const [image, setImage] = useState(null);
   const [images, setImages] = useState(null);
 
@@ -102,7 +108,11 @@ export default function Gallery() {
     }
   };
   useEffect(() => {
-    getData();
+    if (isLoggedIn === true) {
+      getData();
+    } else {
+      router.push("/");
+    }
   }, []);
 
   const [open, setOpen] = React.useState(false);

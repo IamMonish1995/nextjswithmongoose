@@ -16,10 +16,14 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import { InputLabel } from "@mui/material";
 import axios from "axios";
+import { useContext } from "react";
+import { AppContext } from "./_app";
 
 const theme = createTheme();
 
 export default function Home() {
+  const { isLoggedIn, setIsLoggedIn } = useContext(AppContext);
+
   const router = useRouter();
 
   const handleSubmit = async (event) => {
@@ -42,9 +46,14 @@ export default function Home() {
     };
     let res = await axios(options);
     if (res.data.status === "success") {
-      router.push("/gallery");
+      setIsLoggedIn(true);
     }
   };
+  React.useEffect(() => {
+    if (isLoggedIn === true) {
+      router.push("/gallery");
+    }
+  }, [isLoggedIn]);
 
   return (
     <ThemeProvider theme={theme}>
