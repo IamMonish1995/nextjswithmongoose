@@ -9,10 +9,9 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import { CardActionArea, Grid } from "@mui/material";
 
 export default function Gallery() {
-  const [image, setImage] = useState(null);
   const [images, setImages] = useState(null);
 
   function convertToBase64(file) {
@@ -28,29 +27,44 @@ export default function Gallery() {
     });
   }
 
+  const uploadFiles = (files) => {
+    return new Promise(async (resolve, reject) => {
+      await files.map(async (item) => {
+        let base64formateImage = await convertToBase64(item);
+        const options = {
+          url: "/api/images/addimage",
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+          data: {
+            name: item.name,
+            image: base64formateImage,
+            isactive: true,
+          },
+        };
+        let res = await axios(options);
+      });
+
+      resolve(true);
+    });
+  };
+
   const handleUpload = async (e) => {
     e.preventDefault();
-    let base64formateImage = await convertToBase64(e.target.files[0]);
-    setImage(base64formateImage);
+    let files = e.target.files;
+    let fileArray = [];
 
-    const options = {
-      url: "/api/images/addimage",
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json;charset=UTF-8",
-      },
-      data: {
-        name: e.target.files[0].name,
-        image: base64formateImage,
-        isactive: true,
-      },
-    };
-    let res = await axios(options);
-    if (res.data.status === "success") {
-      getData();
+    for (let index = 0; index < files.length; index++) {
+      fileArray.push(files[index]);
     }
+
+    await uploadFiles(fileArray).then(() => {
+      getData();
+    });
   };
+
   const handleSoftDelete = async (ID) => {
     const options = {
       url: "/api/images/deleteimage",
@@ -87,25 +101,40 @@ export default function Gallery() {
   };
   useEffect(() => {
     getData();
-    return () => {
-      setImage(null);
-    };
   }, []);
+
+  
 
   return (
     <>
       <IconButton color="primary" aria-label="upload picture" component="label">
-        <input hidden accept="image/*" type="file" onChange={handleUpload} />
+        <input
+          hidden
+          accept="image/*"
+          multiple
+          type="file"
+          onChange={handleUpload}
+        />
         <PhotoCamera />
       </IconButton>
 
       {images && (
-        <Grid container gap={2}>
+        <Grid container>
           {images
             ?.filter((image) => image.isactive === "true")
             .map((item) => (
-              <Grid item sm={6} md={6} lg={4} xl={3} key={item._id} >
-                <Card sx={{ maxWidth: 345 }} >
+              <Grid
+                marginY="2%"
+                item
+                sm={6}
+                md={6}
+                lg={3}
+                xl={3}
+                key={item._id}
+              >
+                <Card sx={{ maxWidth: 345 }}>
+                  
+                <CardActionArea>
                   <CardMedia
                     component="img"
                     image={item.image}
@@ -116,6 +145,8 @@ export default function Gallery() {
                       {item.name}
                     </Typography>
                   </CardContent>
+                  </CardActionArea>
+
                   <CardActions disableSpacing>
                     <IconButton
                       aria-label="delete"
