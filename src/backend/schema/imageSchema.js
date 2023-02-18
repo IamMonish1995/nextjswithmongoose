@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
+import mongoose ,{model , models} from "mongoose";
 
 // Defining Schema
 const imageSchema = new mongoose.Schema({
     name: String,
     image: String,
+    isactive:String
 })
 
-export const imageModel = mongoose.model("image", imageSchema) // collection name "image"
+export const imageModel = models.Image || model("Image", imageSchema) // collection name "image"

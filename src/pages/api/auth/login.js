@@ -1,5 +1,6 @@
 import { userModel } from "@/backend/schema/userSchema";
-
+import { connectDB } from "@/backend/config/connectDB";
+connectDB()
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.json({ messege: "Methods Other then POST are not allowed" });
